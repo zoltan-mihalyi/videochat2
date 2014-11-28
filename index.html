@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="node_modules/requirejs/require.js"></script>
+</head>
+<body>
+<canvas id="local"></canvas>
+<canvas id="remote"></canvas>
+<hr/>
+<canvas id="localpaint"></canvas>
+<canvas id="remotepaint"></canvas>
+
+<script>
+    require.config({
+        baseUrl:'src/client'
+    });
+
+    require(['controller'], function (Controller) {
+        var controller = new Controller(document.getElementById('local'),document.getElementById('remote'),document.getElementById('localPaint'),document.getElementById('remotePaint'));
+        controller.start();
+    });
+</script>
+</body>
+</html>

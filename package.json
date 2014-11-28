@@ -1,0 +1,26 @@
+{
+  "name": "videochat",
+  "version": "0.0.0",
+  "description": "HTML5 videochat",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "videochat"
+  ],
+  "author": "Zoltan Mihalyi",
+  "license": "ISC",
+  "devDependencies": {
+    "karma": "~0.12.28",
+    "jasmine-core": "~2.1.2",
+    "karma-jasmine": "~0.3.1",
+    "requirejs": "~2.1.15",
+    "karma-requirejs": "~0.2.2",
+    "karma-chrome-launcher": "~0.1.5",
+    "ws": "~0.5.0"
+  }
+}

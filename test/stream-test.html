@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../node_modules/requirejs/require.js"></script>
+</head>
+<body>
+<script>
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    document.body.appendChild(canvas);
+    require(['../src/client/stream'], function (Stream) {
+        var s = new Stream();
+        s.start(function () {
+            console.log('start');
+            var image = s.captureImage();
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.putImageData(image, 0, 0);
+        }, function () {
+            console.log('error');
+        });
+    });
+</script>
+
+If you allow to use the camera, you should see "start" in the console.
+</body>
+</html>
