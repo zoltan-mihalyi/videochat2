@@ -47,7 +47,9 @@ wss.on('connection', function connection(ws) {
     newConnection(ws);
 
     ws._socket.on('drain', function () {
-        ws.resume();
+        if(ws.room) {
+            findOther(ws).resume();
+        }
     });
 
     ws.on('message', function (message) {
@@ -73,6 +75,7 @@ wss.on('connection', function connection(ws) {
             console.log('dispose room');
             try {
                 other.send('RECONNECT');
+                other.resume();
                 newConnection(other);
             } catch (e) {
             }
