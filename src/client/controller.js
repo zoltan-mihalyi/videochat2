@@ -1,11 +1,15 @@
 define(['display', 'network', 'painter', 'processor', 'stream'], function (Display, Network, Painter, Processor, Stream) {
 
+    function setStatus(status){
+        document.getElementById('status').innerHTML=status;
+    }
+
     function Controller(local, remote, localPaint, remotePaint) {
         this.localCanvas = local;
         this.remoteCanvas = remote;
         this.localPaint = localPaint;
-        this.remotePaint = remotePaint;
-        this.url = 'ws://localhost:3000/';
+        this.remotePaint = remotePaint; //TODO
+        this.url = 'ws://videochat.herokuapp.com';
 
         this.events = {};
 
@@ -17,10 +21,10 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
         this.painter = new Painter(localPaint);
 
         this.on('disconnect', function () {
-            console.log('Disconnected');
+            setStatus('Disconnected');
         });
         this.on('reconnect', function () {
-            console.log('Reconnecting...');
+            setStatus('Waiting for another user...');
         });
     }
 
@@ -29,14 +33,14 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
 
         controller.stream.start(function () {
             controller.network.connect(function () {
-                console.log('waiting');
+                setStatus('Waiting for another user...');
             }, function () {
-                console.log('ready');
+                setStatus('Running');
                 controller.processor.start();
                 controller.display.start();
             });
         }, function () {
-            console.log('webcam error')
+            console.log('Failed to start webcam.')
         });
     };
 
