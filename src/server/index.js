@@ -49,6 +49,7 @@ wss.on('connection', function connection(ws) {
     ws._socket.on('drain', function () {
         if(ws.room) {
             findOther(ws)._socket.resume();
+            console.log("resume");
         }
     });
 
@@ -56,7 +57,12 @@ wss.on('connection', function connection(ws) {
         if (ws.room) {
             var other = findOther(ws);
             if (other._socket.bufferSize > 0) {
+                console.log("pause");
                 ws._socket.pause();
+                setTimeout(function(){
+                    ws._socket.resume();
+                    console.log("resume timeout");
+                },1000);
             }
             try {
                 other.send(message);
