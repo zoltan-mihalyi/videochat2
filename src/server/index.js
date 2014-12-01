@@ -55,7 +55,7 @@ wss.on('connection', function connection(ws) {
                     ws.mypaused = true;
                     ws._socket.pause();
                 }
-            }else if(other._socket.bufferSize === 0){
+            }else if(other._socket.bufferSize === 0 && ws.mypaused){
                 console.log("resume");
                 ws.mypaused=false;
                 ws._socket.resume();
