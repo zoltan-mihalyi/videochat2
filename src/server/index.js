@@ -51,9 +51,13 @@ wss.on('connection', function connection(ws) {
             var other = findOther(ws);
             if (other._socket.bufferSize > 0) {
                 console.log("pause");
-                ws._socket.pause();
+                if(!other.mypaused) {
+                    ws.mypaused = true;
+                    ws._socket.pause();
+                }
             }else{
                 console.log("resume");
+                ws.mypaused=false;
                 ws._socket.resume();
             }
             try {
