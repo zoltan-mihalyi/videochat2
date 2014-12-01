@@ -1,11 +1,44 @@
 define(['runnable'], function (Runnable) {
+    function Buffer(onimage) {
+        this.sizes = [];
+        this.images = [];
+        this.onimage = onimage;
+    }
+
+    Buffer.prototype.check = function () {
+        for (var i = 0; i < this.sizes.length; i++) {
+            var size = this.sizes[i];
+            var byteSize = size.w * size.h * 4;
+            for (var j = 0; j < this.images.length; j++) {
+                if (this.images[j].byteLength === byteSize) {
+                    this.onimage({w: size.w, h: size.h, image: this.images[j]});
+                    this.sizes.splice(i, 1);
+                    this.images.splice(j, 1);
+                    return;
+                }
+            }
+        }
+    };
+
+    Buffer.prototype.addSize = function (w, h) {
+        this.sizes.push({w: w, h: h});
+        this.check();
+    };
+
+    Buffer.prototype.addImage = function (img) {
+        this.images.push(img);
+        this.check();
+    };
+
     function Processor(controller) {
         var processor = this;
 
-        this.lastSize = {
-            w: 1,
-            h: 1
-        };
+        this.quality = 1000;
+
+        this.buffer = new Buffer(function (image) {
+            processor.onimage(image);
+        });
+
         this.lastImage = null;
         this.dirty = false;
         this.canvas = document.createElement('canvas');
@@ -24,10 +57,14 @@ define(['runnable'], function (Runnable) {
 
     Processor.prototype.run = function () {
         if (this.controller.network.isCrowded()) {
+            this.quality = Math.round(this.quality / 2);
+            this.quality = Math.max(this.quality, 1000);
             return;
         }
+        this.quality = Math.round(this.quality * 1.1);
+        this.quality = Math.min(this.quality, this.controller.stream.getMaxQuality());
 
-        var img = this.controller.stream.captureImageIfHasNew(20000);
+        var img = this.controller.stream.captureImageIfHasNew(this.quality);
         if (img !== null) {
             this.controller.display.updateLocal(img);
             this.controller.network.send('SIZE,' + img.width + ',' + img.height);
@@ -39,13 +76,16 @@ define(['runnable'], function (Runnable) {
         if (typeof msg === 'string') {
             msg = msg.split(',');
             if (msg[0] === 'SIZE') {
-                this.lastSize.w = Number(msg[1]);
-                this.lastSize.h = Number(msg[2]);
+                this.buffer.addSize(Number(msg[1]), Number(msg[2]));
             }
         } else {
-            this.lastImage = msg;
-            this.dirty = true;
+            this.buffer.addImage(msg);
         }
+    };
+
+    Processor.prototype.onimage = function (image) {
+        this.lastImage = image;
+        this.dirty = true;
     };
 
     Processor.prototype.ondisconnect = function () {
@@ -60,9 +100,9 @@ define(['runnable'], function (Runnable) {
             return null;
         }
         this.dirty = false;
-        var imageData = this.ctx.createImageData(this.lastSize.w, this.lastSize.h);
+        var imageData = this.ctx.createImageData(this.lastImage.w, this.lastImage.h);
         //TODO the loop is slow but this does not work. imageData.data.set(msg);
-        var clampedArray = new Uint8ClampedArray(this.lastImage)
+        var clampedArray = new Uint8ClampedArray(this.lastImage.image)
         for (var i = 0; i < clampedArray.length; i++) {
             imageData.data[i] = clampedArray[i];
         }

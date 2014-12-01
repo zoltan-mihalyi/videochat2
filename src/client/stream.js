@@ -28,17 +28,24 @@ define([], function () {
         }, onerror);
     };
 
-    Stream.prototype.captureImageIfHasNew = function (size) {
+    Stream.prototype.getMaxQuality = function () {
+        if(isNaN(this.video.videoHeight)){
+            alert('X');
+        }
+        return this.video.videoWidth * this.video.videoHeight;
+    }
+
+    Stream.prototype.captureImageIfHasNew = function (quality) {
         if (!this.hasNew) {
-            //return null;
+            //TODO return null;
         }
         this.hasNew = false;
 
         var w = this.video.videoWidth;
         var h = this.video.videoHeight;
-        var origSize = w * h;
-        if (origSize > size) {
-            var factor = Math.sqrt(size / origSize);
+        var origQuality = w * h;
+        if (origQuality > quality) {
+            var factor = Math.sqrt(quality / origQuality);
             w = Math.round(w * factor);
             h = Math.round(h * factor);
         }

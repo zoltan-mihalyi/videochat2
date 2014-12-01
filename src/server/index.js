@@ -56,7 +56,10 @@ wss.on('connection', function connection(ws) {
             if (other._socket.bufferSize > 0) {
                 ws._socket.pause();
             }
-            other.send(message);
+            try {
+                other.send(message);
+            } catch (e) {
+            }
         }
     });
 
@@ -68,9 +71,10 @@ wss.on('connection', function connection(ws) {
             other.room = null;
             ws.room = null;
             console.log('dispose room');
-
-            other.send('RECONNECT');
-            newConnection(other);
+            try {
+                other.send('RECONNECT');
+                newConnection(other);
+            }catch(e){}
         } else {
             if (waiting === ws) {
                 waiting = null;
