@@ -49,13 +49,13 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function (message) {
         if (ws.room) {
             var other = findOther(ws);
-            if (other._socket.bufferSize > 0) {
-                console.log("pause");
+            if (other._socket.bufferSize > 40000) {
                 if(!other.mypaused) {
+                    console.log("pause");
                     ws.mypaused = true;
                     ws._socket.pause();
                 }
-            }else{
+            }else if(other._socket.bufferSize === 0){
                 console.log("resume");
                 ws.mypaused=false;
                 ws._socket.resume();
