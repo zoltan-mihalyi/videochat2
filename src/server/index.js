@@ -48,7 +48,7 @@ wss.on('connection', function connection(ws) {
 
     ws._socket.on('drain', function () {
         if(ws.room) {
-            findOther(ws).resume();
+            findOther(ws)._socket.resume();
         }
     });
 
