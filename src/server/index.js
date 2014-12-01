@@ -6,9 +6,6 @@ var httpServer = http.createServer(function (req, resp) {
     resp.end('WS server');
 }).listen(3000);
 
-var data=[];
-
-
 var wss = new WebSocketServer({server: httpServer});
 
 var rooms = [];
@@ -49,10 +46,17 @@ function newConnection(ws) {
 wss.on('connection', function connection(ws) {
     newConnection(ws);
 
+    ws._socket.on('drain', function () {
+        ws.resume();
+    });
+
     ws.on('message', function (message) {
         if (ws.room) {
-            findOther(ws).send(message);
-            data.push(new Date().getTime());
+            var other = findOther(ws);
+            if (other._socket.bufferSize > 0) {
+                ws._socket.pause();
+            }
+            other.send(message);
         }
     });
 
@@ -71,7 +75,6 @@ wss.on('connection', function connection(ws) {
             if (waiting === ws) {
                 waiting = null;
                 console.log('dewaiting');
-                console.log(data);
             }
         }
     });

@@ -7,7 +7,7 @@ define(['runnable'], function (Runnable) {
             h: 1
         };
         this.lastImage = null;
-        this.lastRequiredImage = null;
+        this.dirty = false;
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
         Runnable.call(this);
@@ -23,11 +23,11 @@ define(['runnable'], function (Runnable) {
     Processor.prototype = new Runnable();
 
     Processor.prototype.run = function () {
-        if(this.controller.network.isCrowded()){
+        if (this.controller.network.isCrowded()) {
             return;
         }
 
-        var img = this.controller.stream.captureImageIfHasNew(2000);
+        var img = this.controller.stream.captureImageIfHasNew(20000);
         if (img !== null) {
             this.controller.display.updateLocal(img);
             this.controller.network.send('SIZE,' + img.width + ',' + img.height);
@@ -43,13 +43,8 @@ define(['runnable'], function (Runnable) {
                 this.lastSize.h = Number(msg[2]);
             }
         } else {
-            var imageData = this.ctx.createImageData(this.lastSize.w, this.lastSize.h);
-            //TODO the loop is slow but this does not work. imageData.data.set(msg);
-            var clampedArray = new Uint8ClampedArray(msg)
-            for (var i = 0; i < clampedArray.length; i++) {
-                imageData.data[i] = clampedArray[i];
-            }
-            this.lastImage = imageData;
+            this.lastImage = msg;
+            this.dirty = true;
         }
     };
 
@@ -61,11 +56,17 @@ define(['runnable'], function (Runnable) {
     };
 
     Processor.prototype.getImageIfHasNew = function () {
-        if (this.lastImage === this.lastRequiredImage) {
+        if (!this.dirty) {
             return null;
         }
-        this.lastRequiredImage = this.lastImage;
-        return this.lastImage;
+        this.dirty = false;
+        var imageData = this.ctx.createImageData(this.lastSize.w, this.lastSize.h);
+        //TODO the loop is slow but this does not work. imageData.data.set(msg);
+        var clampedArray = new Uint8ClampedArray(this.lastImage)
+        for (var i = 0; i < clampedArray.length; i++) {
+            imageData.data[i] = clampedArray[i];
+        }
+        return imageData;
     };
 
     return Processor;

@@ -9,6 +9,8 @@ define(['runnable'], function () {
         var started = false;
         this.ws = new WebSocket(this.controller.url);
 
+        this.ws.binaryType = "arraybuffer";
+
         this.ws.onopen = function () {
             this.disconnected = false;
             onwaiting();
@@ -30,16 +32,7 @@ define(['runnable'], function () {
                 network.controller.emit('reconnect');
             }
 
-            if (typeof evt.data === 'string') {
                 network.controller.emit('message', evt.data);
-            } else {
-                var fileReader = new FileReader();
-                fileReader.onload = function () {
-                    network.controller.emit('message', this.result);
-                };
-                fileReader.readAsArrayBuffer(evt.data);
-            }
-
         };
     };
 
