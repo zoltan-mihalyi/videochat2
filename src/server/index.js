@@ -4,7 +4,7 @@ var http = require('http');
 
 var httpServer = http.createServer(function (req, resp) {
     resp.end('WS server');
-}).listen(3000);
+}).listen(process.env.PORT || 3000);
 
 var wss = new WebSocketServer({server: httpServer});
 
@@ -74,7 +74,8 @@ wss.on('connection', function connection(ws) {
             try {
                 other.send('RECONNECT');
                 newConnection(other);
-            }catch(e){}
+            } catch (e) {
+            }
         } else {
             if (waiting === ws) {
                 waiting = null;
