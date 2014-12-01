@@ -46,23 +46,15 @@ function newConnection(ws) {
 wss.on('connection', function connection(ws) {
     newConnection(ws);
 
-    ws._socket.on('drain', function () {
-        if(ws.room) {
-            findOther(ws)._socket.resume();
-            console.log("resume");
-        }
-    });
-
     ws.on('message', function (message) {
         if (ws.room) {
             var other = findOther(ws);
             if (other._socket.bufferSize > 0) {
                 console.log("pause");
                 ws._socket.pause();
-                setTimeout(function(){
-                    ws._socket.resume();
-                    console.log("resume timeout");
-                },1000);
+            }else{
+                console.log("resume");
+                ws._socket.resume();
             }
             try {
                 other.send(message);
