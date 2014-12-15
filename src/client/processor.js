@@ -84,6 +84,9 @@ define(['runnable'], function (Runnable) {
                 this.buffer.addSize(Number(msg[1]), Number(msg[2]));
             } else if (msg[0] === 'LINE') {
                 this.controller.painter.line(msg[1] === '1', msg[2], msg[3], msg[4], msg[5]);
+            } else if (msg[0] === 'MESSAGE') {
+                this.controller.messages.innerHTML += 'Ő: ' + msg.slice(1).join(',') + '<br/>';
+                this.controller.messages.scrollTop = Infinity;
             }
         } else {
             this.buffer.addImage(msg);

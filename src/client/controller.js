@@ -1,10 +1,10 @@
 define(['display', 'network', 'painter', 'processor', 'stream'], function (Display, Network, Painter, Processor, Stream) {
 
-    function setStatus(status){
-        document.getElementById('status').innerHTML=status;
+    function setStatus(status) {
+        document.getElementById('status').innerHTML = status;
     }
 
-    function Controller(local, remote, paint) {
+    function Controller(local, remote, paint, messages, message, form) {
         this.localCanvas = local;
         this.remoteCanvas = remote;
         this.paint = paint;
@@ -25,6 +25,18 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
         this.on('reconnect', function () {
             setStatus('Waiting for another user...');
         });
+
+        this.messages = messages;
+
+        var controller = this;
+
+        form.onsubmit = function () {
+            controller.network.send('MESSAGE,' + message.value);
+            messages.innerHTML += 'Én: ' + message.value + '<br/>';
+            messages.scrollTop = Infinity
+            message.value = '';
+            return false;
+        };
     }
 
     Controller.prototype.start = function () {

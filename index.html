@@ -6,12 +6,27 @@
     <script src="lib/require.js"></script>
 </head>
 <body>
-<canvas id="local" width="200" height="150"></canvas>
 <div>
-    <canvas style="position: absolute"  id="remote" width="800" height="600"></canvas>
-    <canvas style="position: absolute" id="paint" width="800" height="600"></canvas>
+    <div style="float:left">
+
+        <canvas id="local" width="200" height="150"></canvas>
+    </div>
+    <div style="float:left">
+        <div id="messages" style="height: 130px; overflow: auto"></div>
+        <div>
+            <form id="form">
+                <input id="message"/>
+                <input type="submit" value="Küld">
+            </form>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
 </div>
 <hr/>
+<div>
+    <canvas style="position: absolute" id="remote" width="800" height="600"></canvas>
+    <canvas style="position: absolute" id="paint" width="800" height="600"></canvas>
+</div>
 <div id="status">Starting...</div>
 <script>
     require.config({
@@ -19,7 +34,14 @@
     });
 
     require(['controller'], function (Controller) {
-        var controller = new Controller(document.getElementById('local'), document.getElementById('remote'), document.getElementById('paint'));
+        var controller = new Controller(
+                document.getElementById('local'),
+                document.getElementById('remote'),
+                document.getElementById('paint'),
+                document.getElementById('messages'),
+                document.getElementById('message'),
+                document.getElementById('form')
+        );
         controller.start();
     });
 </script>
