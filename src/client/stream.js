@@ -7,7 +7,17 @@ define([], function () {
     }
 
     Stream.prototype.getUserMedia = function (onready, onerror) {
-        navigator.webkitGetUserMedia({
+        if (navigator.webkitGetUserMedia) {
+            navigator.getUserMedia = navigator.webkitGetUserMedia;
+        }
+        if (navigator.mozGetUserMedia) {
+            navigator.getUserMedia = navigator.mozGetUserMedia;
+        }
+        if (!navigator.getUserMedia) {
+            alert('A böngésződ nem támogatott. Chrome vagy Firefox ajánlott.');
+            return;
+        }
+        navigator.getUserMedia({
             video: true, toString: function () {
                 return 'video';
             }
@@ -29,7 +39,7 @@ define([], function () {
     };
 
     Stream.prototype.getMaxQuality = function () {
-        if(isNaN(this.video.videoHeight)){
+        if (isNaN(this.video.videoHeight)) {
             alert('X');
         }
         return this.video.videoWidth * this.video.videoHeight;

@@ -51,7 +51,7 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
                 controller.display.start();
             });
         }, function () {
-            console.log('Failed to start webcam.')
+            setStatus('Failed to start webcam.')
         });
     };
 
