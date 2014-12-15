@@ -33,6 +33,8 @@ define(['runnable'], function (Runnable) {
     function Processor(controller) {
         var processor = this;
 
+        this.i = 0;
+
         this.quality = 1000;
 
         this.buffer = new Buffer(function (image) {
@@ -56,13 +58,16 @@ define(['runnable'], function (Runnable) {
     Processor.prototype = new Runnable();
 
     Processor.prototype.run = function () {
+        this.i = (this.i + 1) % 10;
+        if (this.i !== 0) {
+            return;
+        }
         if (this.controller.network.isCrowded()) {
-            this.quality = Math.round(this.quality / 2);
-            this.quality = Math.max(this.quality, 1000);
+            this.quality = Math.round(this.quality / 1.1);
             return;
         }
         this.quality = Math.round(this.quality * 1.1);
-        this.quality = Math.min(this.quality, this.controller.stream.getMaxQuality());
+        this.quality = Math.min(this.quality, this.controller.stream.getMaxQuality() / 16);
 
         var img = this.controller.stream.captureImageIfHasNew(this.quality);
         if (img !== null) {
@@ -77,6 +82,8 @@ define(['runnable'], function (Runnable) {
             msg = msg.split(',');
             if (msg[0] === 'SIZE') {
                 this.buffer.addSize(Number(msg[1]), Number(msg[2]));
+            } else if (msg[0] === 'LINE') {
+                this.controller.painter.line(msg[1] === '1', msg[2], msg[3], msg[4], msg[5]);
             }
         } else {
             this.buffer.addImage(msg);

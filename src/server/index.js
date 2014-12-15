@@ -47,20 +47,25 @@ wss.on('connection', function connection(ws) {
     newConnection(ws);
 
     ws.on('message', function (message) {
+        if (typeof  message === 'string') {
+            if (message.split(',')[0] === 'LINE') {
+                ws.send(message);
+            }
+        }
         if (ws.room) {
             var other = findOther(ws);
             if (other._socket.bufferSize > 40000) {
-                if(other.mypaused){
+                if (other.mypaused) {
                     console.log("resume");
                     other._socket.resume();
-                    other.mypaused=false;
+                    other.mypaused = false;
                 }
                 console.log("pause");
                 ws.mypaused = true;
                 ws._socket.pause();
-            }else if(other._socket.bufferSize === 0 && ws.mypaused){
+            } else if (other._socket.bufferSize === 0 && ws.mypaused) {
                 console.log("resume");
-                ws.mypaused=false;
+                ws.mypaused = false;
                 ws._socket.resume();
             }
             try {

@@ -4,11 +4,10 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
         document.getElementById('status').innerHTML=status;
     }
 
-    function Controller(local, remote, localPaint, remotePaint) {
+    function Controller(local, remote, paint) {
         this.localCanvas = local;
         this.remoteCanvas = remote;
-        this.localPaint = localPaint;
-        this.remotePaint = remotePaint; //TODO
+        this.paint = paint;
         this.url = 'ws://videochat.herokuapp.com';
 
         this.events = {};
@@ -18,7 +17,7 @@ define(['display', 'network', 'painter', 'processor', 'stream'], function (Displ
         this.processor = new Processor(this);
         this.display = new Display(this);
 
-        this.painter = new Painter(localPaint);
+        this.painter = new Painter(paint, this);
 
         this.on('disconnect', function () {
             setStatus('Disconnected');

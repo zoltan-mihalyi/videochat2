@@ -7,18 +7,19 @@
 </head>
 <body>
 <canvas id="local" width="200" height="150"></canvas>
-<canvas id="remote" width="800" height="600"></canvas>
+<div>
+    <canvas style="position: absolute"  id="remote" width="800" height="600"></canvas>
+    <canvas style="position: absolute" id="paint" width="800" height="600"></canvas>
+</div>
 <hr/>
 <div id="status">Starting...</div>
-<canvas id="localpaint"></canvas>
-<canvas id="remotepaint"></canvas>
 <script>
     require.config({
-        baseUrl:'src/client'
+        baseUrl: 'src/client'
     });
 
     require(['controller'], function (Controller) {
-        var controller = new Controller(document.getElementById('local'),document.getElementById('remote'),document.getElementById('localPaint'),document.getElementById('remotePaint'));
+        var controller = new Controller(document.getElementById('local'), document.getElementById('remote'), document.getElementById('paint'));
         controller.start();
     });
 </script>
