@@ -54,6 +54,7 @@ wss.on('connection', function connection(ws) {
         }
         if (ws.room) {
             var other = findOther(ws);
+<<<<<<< HEAD
             if (other._socket.bufferSize > 40000) {
                 if (other.mypaused) {
                     console.log("resume");
@@ -68,6 +69,8 @@ wss.on('connection', function connection(ws) {
                 ws.mypaused = false;
                 ws._socket.resume();
             }
+=======
+>>>>>>> 2fe1d2c22b21106886251830a17b991158daefbc
             try {
                 other.send(message);
             } catch (e) {
@@ -97,3 +100,16 @@ wss.on('connection', function connection(ws) {
         }
     });
 });
+
+setInterval(function () {
+    for(var i=0;i<rooms.length;i++){
+        var room=rooms[i];
+        for(var j=0;j<=1;j++){
+            if(room[j]._socket.bufferSize>20000){
+                room[1-j]._socket.pause();
+            }else{
+                room[1-j]._socket.resume();
+            }
+        }
+    }
+},500);
